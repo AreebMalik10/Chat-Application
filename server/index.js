@@ -3,7 +3,10 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const http = require("http");
 const {Server} = require("socket.io");
-const authRoutes = require("./routes/auth")
+const authRoutes = require("./routes/auth");
+const chatRoutes = require("./routes/chat");
+const { Socket } = require("dgram");
+const Message = require("./models/Message");
 require("dotenv").config();
 
 const app = express();
@@ -29,9 +32,32 @@ mongoose.connect(process.env.MONGO_URI, {
 
 //Routes
 app.use("/auth", authRoutes);
+app.use("/chat", chatRoutes);
 
 app.get("/", (req, res) => {
     res.send("Chat Application Backend Running...");
+})
+
+io.on("connection", (socket) => {
+    console.log("User Connected:", Socket.id);
+
+    socket.on("sendMessage", async (data) =>{
+        const {senderId, receiverId, message} = data;
+
+        const newMessage = new Message({
+            senderId,
+            receiverId,
+            message
+        });
+        await newMessage.save();
+
+        io.emit("Receive Message", newMessage);
+    });
+
+    socket.on("disconnect", () => {
+        console.log("User Disconnected", Socket.id);
+});
+    
 })
 
 server.listen(5000, () => {
