@@ -39,10 +39,16 @@ app.get("/", (req, res) => {
 })
 
 io.on("connection", (socket) => {
-    console.log("User Connected:", Socket.id);
+    console.log("User Connected:", socket.id);
 
     socket.on("sendMessage", async (data) =>{
+        console.log("Recieved Message Data:", data);
         const {senderId, receiverId, message} = data;
+
+        if(!senderId || !receiverId || !message){
+            console.error("Error: Missing required fields");
+            return;
+        }   
 
         const newMessage = new Message({
             senderId,

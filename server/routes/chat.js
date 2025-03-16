@@ -5,7 +5,7 @@ const authMiddleware = require("../middleware/auth")
 const router = express.Router();
 
 
-router.get("/:userId/:otherUserId", authMiddleware, async(req, res) =>{
+router.get("/:userId/:otherUserId", async(req, res) =>{
     try{
         const {userId, otherUserId} = req.params;
 

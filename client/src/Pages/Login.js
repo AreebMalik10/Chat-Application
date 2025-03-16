@@ -16,6 +16,7 @@ const Login = () => {
     try {
       const res = await loginUser(formData);
       console.log("Login Successful", res.data);
+      navigate("/home", { state: {userData: res.data}});
       // Save token in local storage or context
     } catch (error) {
       console.error("Login Failed", error.response?.data || error.message);

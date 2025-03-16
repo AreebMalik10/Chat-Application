@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { TextField, Button, Container, Typography, Box } from "@mui/material";
 import { registerUser } from "../Api";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [formData, setFormData] = useState({ username: "", email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   // Handle input changes
   const handleChange = (e) => {
@@ -29,6 +31,10 @@ const Register = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleNavigateToLogin = () => {
+    navigate("/");
   };
 
   return (
@@ -82,6 +88,17 @@ const Register = () => {
         >
           {isLoading ? "Registering..." : "Register"}
         </Button>
+        <Box mt={2}> 
+        <Button 
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          onClick={handleNavigateToLogin}
+        >
+            Login
+        </Button>
+        </Box>
       </form>
     </Container>
   );
