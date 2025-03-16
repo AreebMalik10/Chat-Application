@@ -186,7 +186,7 @@ export default function HomePage() {
             </Box>
           )}
           
-          {/* Recently Chatted Users */}
+          {/* Recently Chats */}
           <Box sx={{ flexGrow: 1, overflow: "auto" }}>
             <Typography variant="subtitle1" sx={{ p: 1, fontWeight: "bold", bgcolor: "#f0f2f5" }}>
               Recent Chats
