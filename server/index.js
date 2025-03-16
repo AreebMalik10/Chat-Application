@@ -7,6 +7,7 @@ const authRoutes = require("./routes/auth");
 const chatRoutes = require("./routes/chat");
 const { Socket } = require("dgram");
 const Message = require("./models/Message");
+const Conversation = require("./models/Conversation");
 require("dotenv").config();
 
 const app = express();
@@ -57,6 +58,21 @@ io.on("connection", (socket) => {
         });
         await newMessage.save();
 
+        let conversation = await Conversation.findOne({
+            participants: {$all: [senderId, receiverId]}
+        });
+
+        if(!conversation) {
+            conversation = new Conversation({
+                participants: [senderId, receiverId],
+                lastMessage: {senderId, message,}
+            })
+        } else {
+            conversation.lastMessage = {senderId, message, timestamp: new Date()};
+        }
+
+        await conversation.save();
+ 
         io.emit("Receive Message", newMessage);
     });
 

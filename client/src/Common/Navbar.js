@@ -6,12 +6,17 @@ const Navbar = ({ userData }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); 
+    localStorage.removeItem("token");
     navigate("/");
   };
 
   return (
-    <AppBar position="static">
+    <AppBar 
+      position="static"
+      sx={{ 
+        backgroundColor: "#128C7E", // Darker shade of green for contrast
+      }}
+    >
       <Toolbar>
         {/* Chat Application Label */}
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -23,7 +28,16 @@ const Navbar = ({ userData }) => {
           <Typography variant="body1">{userData?.username}</Typography>
 
           {/* Log Out Button */}
-          <Button color="inherit" onClick={handleLogout}>
+          <Button 
+            color="inherit" 
+            onClick={handleLogout}
+            sx={{
+              backgroundColor: "rgba(255, 255, 255, 0.1)", // Slight transparency for the button
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.2)", // Hover effect
+              },
+            }}
+          >
             Log Out
           </Button>
         </Box>

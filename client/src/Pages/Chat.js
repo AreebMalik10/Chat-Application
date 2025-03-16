@@ -2,6 +2,22 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import io from "socket.io-client";
 import { fetchMessages } from "../Api";
+import { 
+  Box, 
+  Paper, 
+  Typography, 
+  TextField, 
+  IconButton, 
+  Avatar, 
+  AppBar, 
+  Toolbar,
+  InputAdornment
+} from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import CallIcon from "@mui/icons-material/Call";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 
 const socket = io("http://localhost:5000");
 
@@ -25,8 +41,8 @@ export default function Chat() {
         const response = await fetchMessages(userData.userId, selectedUser?._id);
         console.log("API Response:", response);
         
+        // Handle both direct array or nested data structure
         const messagesData = response.data || response;
-        console.log("Messages Data to set:", messagesData);
         
         if (Array.isArray(messagesData)) {
           setMessages(messagesData);
@@ -54,13 +70,6 @@ export default function Chat() {
     };
   }, [selectedUser, userData]);
 
-  // Debug log whenever messages state changes
-  useEffect(() => {
-    console.log("Messages State Updated:", messages);
-    console.log("Messages Array Length:", messages.length);
-    console.log("Is messages an array?", Array.isArray(messages));
-  }, [messages]);
-
   const sendMessage = () => {
     if (message.trim() === "") return;
 
@@ -71,74 +80,143 @@ export default function Chat() {
     };
 
     socket.emit("sendMessage", newMessage);
-    setMessages((prev) => [...prev, newMessage]);
     setMessage("");
   };
 
-  console.log("Current userData:", userData);
-  console.log("Selected User:", selectedUser);
+  const messagesEndRef = React.useRef(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   return (
-    <div>
-      <h2>Chat with {selectedUser?.username}</h2>
-      
-      <div style={{ fontSize: '12px', color: 'gray', marginBottom: '10px' }}>
-        Messages loaded: {messages.length}
-      </div>
-      
-      <div style={{ border: "1px solid gray", height: "300px", overflowY: "scroll", padding: "10px" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      {/* Header */}
+      <AppBar position="static" sx={{ bgcolor: "#075E54" }}>
+        <Toolbar>
+          <Avatar sx={{ mr: 2 }}>
+            {selectedUser?.username?.charAt(0).toUpperCase()}
+          </Avatar>
+          <Box sx={{ flexGrow: 1 }}>
+            <Typography variant="h6" component="div">
+              {selectedUser?.username}
+            </Typography>
+            <Typography variant="caption" sx={{ color: "#E0E0E0" }}>
+              Online
+            </Typography>
+          </Box>
+          <IconButton color="inherit">
+            <CallIcon />
+          </IconButton>
+          <IconButton color="inherit">
+            <MoreVertIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+
+      {/* Chat Area */}
+      <Box
+        sx={{
+          flexGrow: 1,
+          overflowY: "auto",
+          bgcolor: "#ECE5DD",
+          backgroundImage: "url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')",
+          backgroundRepeat: "repeat",
+          p: 2
+        }}
+      >
         {messages.length > 0 ? (
           messages.map((msg, index) => {
-
-            const isCurrentUserSender = msg.senderId === userData.userId;
+            
+            const isCurrentUserSender = msg.senderId === userData._id || msg.senderId === userData.userId;
+            
+            const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
             
             return (
-              <div 
-                key={index} 
-                style={{ 
-                  textAlign: isCurrentUserSender ? "right" : "left",
-                  marginBottom: "10px"
+              <Box
+                key={index}
+                sx={{
+                  display: "flex",
+                  justifyContent: isCurrentUserSender ? "flex-end" : "flex-start",
+                  mb: 1.5
                 }}
               >
-                <div
-                  style={{
-                    display: "inline-block",
-                    backgroundColor: isCurrentUserSender ? "#dcf8c6" : "#f1f0f0",
-                    padding: "8px 12px",
-                    borderRadius: "10px",
-                    maxWidth: "70%"
+                <Paper
+                  elevation={1}
+                  sx={{
+                    p: 1,
+                    px: 2,
+                    maxWidth: "70%",
+                    borderRadius: 2,
+                    bgcolor: isCurrentUserSender ? "#DCF8C6" : "#FFFFFF"
                   }}
                 >
-                  <strong>{isCurrentUserSender ? "You" : selectedUser.username}</strong>
-                  <div>{msg.message}</div>
-                  <div style={{ fontSize: "10px", color: "#999", textAlign: "right" }}>
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </div>
-                </div>
-              </div>
+                  <Typography variant="body1">{msg.message}</Typography>
+                  <Typography 
+                    variant="caption" 
+                    sx={{ 
+                      color: "text.secondary",
+                      display: "block",
+                      textAlign: "right",
+                      mt: 0.5
+                    }}
+                  >
+                    {time}
+                  </Typography>
+                </Paper>
+              </Box>
             );
           })
         ) : (
-          <p>No messages yet.</p>
+          <Typography
+            variant="body1"
+            sx={{ textAlign: "center", color: "text.secondary", mt: 4 }}
+          >
+            No messages yet. Start the conversation!
+          </Typography>
         )}
-      </div>
-      
-      <div style={{ marginTop: "10px", display: "flex" }}>
-        <input
-          type="text"
-          placeholder="Type a message..."
+        <div ref={messagesEndRef} />
+      </Box>
+
+      {/* Input Area */}
+      <Paper
+        elevation={3}
+        sx={{
+          p: 2,
+          display: "flex",
+          alignItems: "center",
+          bgcolor: "#F0F2F5"
+        }}
+      >
+        <IconButton sx={{ mr: 1 }}>
+          <EmojiEmotionsIcon />
+        </IconButton>
+        <IconButton sx={{ mr: 1 }}>
+          <AttachFileIcon />
+        </IconButton>
+        
+        <TextField
+          fullWidth
+          placeholder="Type a message"
+          variant="outlined"
+          size="small"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          style={{ flexGrow: 1, padding: "8px" }}
-          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+          onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+          sx={{ mr: 1 }}
         />
-        <button 
+        
+        <IconButton 
+          color="primary" 
           onClick={sendMessage}
-          style={{ marginLeft: "10px", padding: "8px 16px" }}
+          sx={{ bgcolor: "#075E54", color: "white", "&:hover": { bgcolor: "#075E54", opacity: 0.9 } }}
         >
-          Send
-        </button>
-      </div>
-    </div>
+          <SendIcon />
+        </IconButton>
+      </Paper>
+    </Box>
   );
 }
