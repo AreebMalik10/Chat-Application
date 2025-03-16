@@ -7,7 +7,6 @@ import axios from "axios";
 import { 
   Avatar, 
   Box, 
-  Container,
   Divider,
   IconButton,
   InputAdornment,
@@ -86,35 +85,26 @@ export default function HomePage() {
     });
   };
 
-  // Random time for display purposes
-  // const getRandomTime = () => {
-  //   const hour = Math.floor(Math.random() * 12) + 1;
-  //   const minute = Math.floor(Math.random() * 60).toString().padStart(2, '0');
-  //   const ampm = Math.random() > 0.5 ? 'AM' : 'PM';
-  //   return `${hour}:${minute} ${ampm}`;
-  // };
-  
-  // Get random last message for display purposes
-  // const getRandomMessage = () => {
-  //   const messages = [
-  //     "Hey, how are you?",
-  //     "Let's meet tomorrow",
-  //     "Did you see that?",
-  //     "Thanks for your help",
-  //     "Call me when you're free",
-  //     "Alright, talk to you later",
-  //     "What's the plan?",
-  //     "I'll send you the details"
-  //   ];
-  //   return messages[Math.floor(Math.random() * messages.length)];
-  // };
-
   return (
     <Box sx={{ height: "100vh", display: "flex", flexDirection: "column", bgcolor: "#f0f2f5" }}>
       <Navbar userData={userData} />
       
-      <Container maxWidth="md" sx={{ flexGrow: 1, display: "flex", flexDirection: "column", py: 2 }}>
-        <Paper sx={{ flexGrow: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <Box sx={{ 
+        display: "flex", 
+        flexDirection: "row", 
+        height: "calc(100vh - 64px)", // Assuming Navbar height is 64px
+        overflow: "hidden"
+      }}>
+        {/* Left Side Chat List Panel - WhatsApp Style */}
+        <Paper sx={{ 
+          width: "30%", 
+          minWidth: "300px", 
+          maxWidth: "420px", 
+          height: "100%", 
+          display: "flex", 
+          flexDirection: "column", 
+          borderRadius: 0
+        }}>
           {/* Header */}
           <Box sx={{ bgcolor: "#00a884", color: "white", p: 1, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Typography variant="h6" sx={{ fontWeight: "bold", pl: 1 }}>Chat With Us</Typography>
@@ -150,7 +140,7 @@ export default function HomePage() {
           
           {/* User Search Results */}
           {search.length > 0 && users?.length > 0 && (
-            <Box sx={{ bgcolor: "white", mb: 1 }}>
+            <Box sx={{ bgcolor: "white", mb: 1, overflow: "auto" }}>
               <Typography variant="subtitle1" sx={{ p: 1, fontWeight: "bold" }}>
                 Search Results
               </Typography>
@@ -217,12 +207,10 @@ export default function HomePage() {
                       </ListItemAvatar>
                       <ListItemText
                         primary={user.username}
-                        // secondary={getRandomMessage()}
                         primaryTypographyProps={{ fontWeight: "medium" }}
                       />
                       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end", minWidth: 50 }}>
                         <Typography variant="caption" color="textSecondary">
-                          {/* {getRandomTime()} */}
                         </Typography>
                       </Box>
                     </ListItem>
@@ -233,7 +221,43 @@ export default function HomePage() {
             )}
           </Box>
         </Paper>
-      </Container>
+        
+        {/* Right Side Chat Area - Initially Empty */}
+        <Box sx={{ 
+          flexGrow: 1, 
+          bgcolor: "#f0f2f5", 
+          display: "flex", 
+          flexDirection: "column", 
+          justifyContent: "center", 
+          alignItems: "center",
+          backgroundImage: "url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')",
+          backgroundSize: "contain",
+          position: "relative"
+        }}>
+          <Paper sx={{ 
+            py: 4, 
+            px: 6, 
+            display: "flex", 
+            flexDirection: "column", 
+            alignItems: "center", 
+            bgcolor: "rgba(255, 255, 255, 0.9)",
+            borderRadius: 2,
+            maxWidth: "80%"
+          }}>
+            <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold", color: "#128C7E" }}>
+              Welcome to Chat App
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2, textAlign: "center", color: "#666" }}>
+              Select a chat to start messaging
+            </Typography>
+            <Box component="img" 
+              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzEyOEM3RSIgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiPjxwYXRoIGQ9Ik0xOS4zNTUgNC44NjJjLjAzNy0uMDcuMDg2LS4xMy4xMTYtLjE5OC4xODQtLjQxMiAyLjAwMi0yLjgxMiAyLjAwMi0yLjgxMi4yODctLjQxMi4yNTgtLjk2NS0uMDY1LTEuMzVDMjEuMTg0LjE3MSAyMC43MjcuMDEgMjAuMjU1LjEwMmwuMDAyLS4wMUwxNi40MTcgMS4wNWMtLjU1LjEzNS0xLjEzMi4wNi0xLjYwNi0uMjdsLTEuNTUtMS4wOWMtLjYzLS40NDItMS40NTYtLjU0OC0yLjE4LS4yNTcgMCAwLTMuMjk3IDEuMzIzLTkuMzEgNi4zNjhDLjE5MSA3LjA0NS4wMDggOC4zNzIuMDAxIDkuNzUzYy0uMDA2IDEuMDkuMTM3IDIuMTk3LjYxIDMuMTg1LjU4OCAxLjIzMSAxLjA1MiAyLjMxOCAxLjQyIDMuMzA5LjY4NyAxLjgzNy45OCA0LjAyLjk4IDUuODY0IDAgLjQxMi4xNjcuODEyLjQ2IDEuMTA2LjI5NS4yOTUuNjk4LjQ2IDEuMTEuNDYgNCAwIDYuODI1LTEuOTc1IDguMjU4LTMuMjYuNzE0LS42NDQuNzgyLTEuNzMzLjE1OC0yLjQ2N2wtMS4zMjctMS41NjVjLS4zMzctLjM5Ny0uNDctLjkxMi0uMzUtMS40MjUgMCAwIC4zMzgtMS40MTMuODc4LTIuMzc3LjA4NC0uMTUuMTg1LS4yNzUuMjgyLS40MDUuMjA1LS4yNzUuMjc0LS42LjE2MS0uODk2bC0uNTg3LTEuNTI1Yy0uMDU3LS4xNS0uMDU3LS4zLjAwNy0uNDVsMi4wNC00LjczYy4wNjUtLjE1OC4xNzMtLjI4OC4zMS0uMzgybDMuNzQ2LTIuNTY2Yy41MjctLjM2IDEuMjI0LS4yMzkgMS42OC4yNjRsLjIwNC4yMjdjLjI1LjI4LjY3MS4zNjUgMS4wMzUuMjMxLjM4Mi0uMTQyLjc1LS4zMTEgMS4xMDMtLjQ5NS4yMzQtLjEyMi4zNjMtLjM1MS40NTQtLjU5Mi4wNTktLjE1OS4xNTMtLjMzNC4yMDctLjQ5MyIvPjwvc3ZnPg=="
+              alt="Chat Icon"
+              sx={{ width: 128, height: 128, opacity: 0.8 }}
+            />
+          </Paper>
+        </Box>
+      </Box>
     </Box>
   );
 }
