@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../Common/Navbar";
 import { fetchUsers } from "../Api";
 import axios from "axios";
-// Material UI imports
 import { 
   Avatar, 
   Box, 
